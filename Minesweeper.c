@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include "colorPrint.h"
+
+//TODO: to check if we need to put if and end if
 
 bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upon success
     /*
@@ -32,8 +35,10 @@ bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upo
 
         //TODO: check what to do if the input is invalid
     }
+    //TODO: free all the malloc
 
 }
+
 
 void init_visibileity(GameBoard *g) {
     /*
@@ -56,36 +61,40 @@ void plus_one_mines(GameBoard *g, int row, int col) {
      * return: null
    */
 
-    if (0 <= (row - 1) <= g->rows && 0 <= (col) <= g->cols) { //one cell up  [ *g->board[row - 1][col] ]
+    if (0 <= (row - 1) && (row - 1) <= g->rows && 0 <= (col) &&
+        (col) <= g->cols) { //one cell up  [ *g->board[row - 1][col] ]
         g->board[row - 1][col].numOfMines++;
     }
 
-    if (0 <= (row + 1) <= g->rows && 0 <= (col) <= g->cols) { // one cell down [  *g->board[row + 1][col] ]
+    if (0 <= (row + 1) && (row + 1) <= g->rows && 0 <= (col) &&
+        (col) <= g->cols) { // one cell down [  *g->board[row + 1][col] ]
         g->board[row + 1][col].numOfMines++;
     }
-    if (0 <= (row) <= g->rows && 0 <= (col + 1) <= g->cols) { //one column right [ *g->board[row][col + 1] ]
+    if (0 <= (row) && (row) <= g->rows && 0 <= (col + 1) &&
+        (col + 1) <= g->cols) { //one column right [ *g->board[row][col + 1] ]
         g->board[row][col + 1].numOfMines++;
     }
-    if (0 <= (row) <= g->rows && 0 <= (col - 1) <= g->cols) { //one column left [ *g->board[row][col - 1]]
+    if (0 <= (row) && (row) <= g->rows && 0 <= (col - 1) &&
+        (col - 1) <= g->cols) { //one column left [ *g->board[row][col - 1]]
         g->board[row][col - 1].numOfMines++;
     }
 
-    if (0 <= (row - 1) <= g->rows &&
-        0 <= (col - 1) <= g->cols) { //Diagonal top right [ *g->board[row - 1][col - 1]]
+    if (0 <= (row - 1) && (row - 1) <= g->rows &&
+        0 <= (col - 1) && (col - 1) <= g->cols) { //Diagonal top right [ *g->board[row - 1][col - 1]]
         g->board[row - 1][col - 1].numOfMines++;
     }
 
-    if (0 <= (row + 1) <= g->rows &&
-        0 <= (col - 1) <= g->cols) { //Diagonal down right [ *g->board[row + 1][col - 1]]
+    if (0 <= (row + 1) && (row + 1) <= g->rows &&
+        0 <= (col - 1) && (col - 1) <= g->cols) { //Diagonal down right [ *g->board[row + 1][col - 1]]
         g->board[row + 1][col - 1].numOfMines++;
     }
 
-    if (0 <= (row - 1) <= g->rows &&
-        0 <= (col + 1) <= g->cols) { //Diagonal top left [ *g->board[row - 1][col + 1]]
+    if (0 <= (row - 1) && (row - 1) <= g->rows &&
+        0 <= (col + 1) && (col + 1) <= g->cols) { //Diagonal top left [ *g->board[row - 1][col + 1]]
         g->board[row - 1][col + 1].numOfMines++;
     }
-    if (0 <= (row + 1) <= g->rows &&
-        0 <= (col + 1) <= g->cols) { //Diagonal down left [ *g->board[row + 1][col + 1]]
+    if (0 <= (row + 1) && (row + 1) <= g->rows &&
+        0 <= (col + 1) && (col + 1) <= g->cols) { //Diagonal down left [ *g->board[row + 1][col + 1]]
         g->board[row + 1][col + 1].numOfMines++;
     }
 
@@ -119,7 +128,23 @@ void populateMines(GameBoard *g, int level) {
         int row = rand() % (g->rows - 1); // rand row between 1-20
         int col = rand() % (g->cols - 1); // rand col between 1-20
         g->board[row][col].isMine = TRUE; // change the property to false
-        plus_one_mines(g, row, col);// update all the neighboring cells plus one mine of neighbor
+        //plus_one_mines(g, row, col);// update all the neighboring cells plus one mine of neighbor
+        markNumbers(g);// update all the neighboring cells plus one mine of neighbor
+    }
+}
+
+void markNumbers(GameBoard *g) {
+    /*
+     * A function that update all The cells neighboring property if there is neighbor mine
+     * param: The parameter pointer to the board
+     * return: null
+   */
+    for (int i = 0; i < g->rows; ++i) {
+        for (int j = 0; j < g->cols; ++j) {
+            if (g->board[i][j].isMine) { // if the cell is mine
+                plus_one_mines(g, i, j);// update all the neighboring cells plus one mine of neighbor
+            }
+        }
     }
 }
 
@@ -127,6 +152,7 @@ void printBoard(GameBoard *g, int cursorCoords[2]) {
     for (int i = 0; i < g->rows; ++i) {
         for (int j = 0; j < g->cols; ++j) {
             printf("%d ", g->board[i][j].isMine);
+            // colorPrint(FG_Blue,BG_Red,ATT_Def,cursorCoords);
         }
         printf("\n");
     }

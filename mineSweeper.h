@@ -6,19 +6,23 @@
 
 //possible values of level argument in populateMines
 enum
-{	EASY = 1,
+{
+	EASY = 1,
 	MEDIUM,
-	HARD};
+	HARD
+};
 
 //defines a boolean (doesn't exist natively in c) for the following functions.
 typedef enum
-{	FALSE,
+{
+	FALSE,
 	TRUE
 }bool;
 
 //possible keys during game
 typedef enum
-{		FLAG_TILE  	= ' ',
+{	
+	FLAG_TILE  	= ' ',
 	CLICK_TILE 	= '\n',
 	QUIT		= 'q',
 	LEFT		= 'a',
@@ -46,4 +50,6 @@ void flagTile(GameBoard *g, int row, int col);
 void populateMines(GameBoard *g, int level);
 void markNumbers(GameBoard *g);
 void printBoard(GameBoard *g, int cursorCoords[2]);
+
+//TODO: to cheack if i need to include the funcaion that i create or to do them pre order
 
