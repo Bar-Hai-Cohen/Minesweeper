@@ -11,6 +11,8 @@
 
 //TODO: to check if we need to put if and end if
 
+//TODO: i need to set all the mine no zero start or not ? // why to tzlil is make numbers and to me zero ?
+
 bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upon success
     /*
      * A function that create The board and initialize the Struct game board.
@@ -148,6 +150,46 @@ void markNumbers(GameBoard *g) {
     }
 }
 
+void clickTile(GameBoard *g, int row, int col) {
+    /*
+     * A function that get some index on the tile and make "click" (some change)  on the tile
+     * param: The parameter pointer to the board, the row and column
+     * return: null
+   */
+    if (row >= 0 && row <= g->board && col >= 0 && col <= g->cols) { // if the row and the column is inside the board
+        if (g->board[row][col].isVisible) // if the tile is visible return
+            return;
+        if (!g->board[row][col].isVisible &&
+            g->board[row][col].isFlagged)  // if the tile is invisible, and you flagged him (you think is mine)
+            return;
+        if (!g->board[row][col].isVisible &&
+            g->board[row][col].isFlagged == FALSE) { // if the tile is invisible and not flagged
+            if (g->board[row][col].isMine) { // if he mines
+                g->isMineClicked = TRUE; //  you press mine "end game"
+                return;
+            }
+            if (g->board[row][col].numOfMines >
+                0) { //if there is number of neighbor mine just open and show the number of mine around him
+                g->board[row][col].isVisible = TRUE;
+                return;
+            }
+
+            if (g->board[row][col].numOfMines ==0) { //there is no neighbor mine around him so call this function to the neighbor of him
+                clickTile(g, row - 1, col - 1);// up left
+                clickTile(g, row - 1, col); // up
+                clickTile(g, row - 1, col + 1);//up right
+                clickTile(g, row, col + 1);// right
+                clickTile(g, row + 1, col + 1);//down right
+                clickTile(g, row + 1, col);//down
+                clickTile(g, row + 1, col - 1);//down left
+                clickTile(g, row, col - 1);//left
+            }
+        }
+    } else {
+        return;
+    }
+}
+
 void printBoard(GameBoard *g, int cursorCoords[2]) {
     for (int i = 0; i < g->rows; ++i) {
         for (int j = 0; j < g->cols; ++j) {
@@ -157,6 +199,9 @@ void printBoard(GameBoard *g, int cursorCoords[2]) {
         printf("\n");
     }
 }
+
+
+
 
 
 
