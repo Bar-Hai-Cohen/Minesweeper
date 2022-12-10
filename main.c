@@ -5,7 +5,7 @@ int main() {
     printf("Hello, World!\n");
     int cur[2] = {0, 0};
     GameBoard g;
-    initBoard(&g, 5, 5, 1); //returns true upon success
+    initBoard(&g, 5, 5, 2); //returns true upon success
     printBoard(&g, cur);
 
     return 0;

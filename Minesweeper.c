@@ -3,7 +3,7 @@
 //             ID: 209499284
 //
 
-#include "Minesweeper.h"
+#include "mineSweeper.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -12,6 +12,9 @@
 //TODO: to check if we need to put if and end if
 
 //TODO: i need to set all the mine no zero start or not ? // why to tzlil is make numbers and to me zero ?
+
+//TODO : todo pre call for all the function that i write
+
 
 bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upon success
     /*
@@ -38,6 +41,8 @@ bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upo
         //TODO: check what to do if the input is invalid
     }
     //TODO: free all the malloc
+
+    return TRUE; // TODO: change
 
 }
 
@@ -156,7 +161,7 @@ void clickTile(GameBoard *g, int row, int col) {
      * param: The parameter pointer to the board, the row and column
      * return: null
    */
-    if (row >= 0 && row <= g->board && col >= 0 && col <= g->cols) { // if the row and the column is inside the board
+    if (row >= 0 && row <= g->rows && col >= 0 && col <= g->cols) { // if the row and the column is inside the board
         if (g->board[row][col].isVisible) // if the tile is visible return
             return;
         if (!g->board[row][col].isVisible &&
@@ -174,7 +179,8 @@ void clickTile(GameBoard *g, int row, int col) {
                 return;
             }
 
-            if (g->board[row][col].numOfMines ==0) { //there is no neighbor mine around him so call this function to the neighbor of him
+            if (g->board[row][col].numOfMines ==
+                0) { //there is no neighbor mine around him so call this function to the neighbor of him
                 clickTile(g, row - 1, col - 1);// up left
                 clickTile(g, row - 1, col); // up
                 clickTile(g, row - 1, col + 1);//up right
@@ -190,11 +196,43 @@ void clickTile(GameBoard *g, int row, int col) {
     }
 }
 
+void flagTile(GameBoard *g, int row, int col) {
+    /*
+   * A function that check the specific tile ,if the tile is invisible and not flag, she will flag him
+   * param: The parameter pointer to the board, row and column
+   * return: null
+ */
+    if (row >= 0 && row <= g->rows && col >= 0 && col <= g->cols) { // if the row and the column is inside the board
+        if (g->board[row][col].isVisible) // if he is visible return
+            return;
+        if (g->board[row][col].isVisible == FALSE &&
+            g->board[row][col].isFlagged == FALSE) //if the tile is invisible and not flag, she will flag him
+            g->board[row][col].isFlagged = TRUE;
+        if (g->board[row][col].isVisible == FALSE &&
+            g->board[row][col].isFlagged == TRUE) //if the tile is invisible and flag, she will remove the flag
+            g->board[row][col].isFlagged = FALSE;
+
+    } else { // if the row and col not in the area remove.
+        return;
+    }
+}
+
 void printBoard(GameBoard *g, int cursorCoords[2]) {
+    g->board[2][2].isFlagged = TRUE;
+    //printf("%d\n",mine);
     for (int i = 0; i < g->rows; ++i) {
         for (int j = 0; j < g->cols; ++j) {
-            printf("%d ", g->board[i][j].isMine);
-            // colorPrint(FG_Blue,BG_Red,ATT_Def,cursorCoords);
+//            printf("%d ", g->board[i][j].isMine);
+            if (i == cursorCoords[0] && j == cursorCoords[1]) {
+                colorPrint(FG_Red, BG_White, ATT_Def, " #");
+            } else if (!g->board[i][j].isVisible && g->board[i][j].isFlagged) {
+                colorPrint(FG_Red, BG_White, ATT_Def, " F");
+            } else if (g->board[i][j].isVisible && !g->board[i][j].isFlagged) {
+                int mine = g->board[i][j].numOfMines;
+                colorPrint(FG_Red, BG_White, ATT_Def, " %d", mine);
+            } else if (!g->board[i][j].isVisible) {
+                colorPrint(FG_Blue, BG_Blue, ATT_Def, "  ");
+            }
         }
         printf("\n");
     }
