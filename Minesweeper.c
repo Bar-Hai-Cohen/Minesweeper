@@ -13,7 +13,11 @@
 
 //TODO: i need to set all the mine no zero start or not ? // why to tzlil is make numbers and to me zero ?
 
-//TODO : todo pre call for all the function that i write
+//TODO : todo pre call for all the function that i write here
+
+//TODO : to check why he fall somtimes
+
+//TODO: check total mine
 
 
 bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upon success
@@ -34,6 +38,14 @@ bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upo
         for (int i = 0; i < rows; ++i) {
             g->board[i] = (Tile *) malloc(sizeof(Tile) * cols);
         }
+//        for(int i=0; i<g->rows;i++){
+//            for(int j=0; j<g->cols;j++){
+//                g->board[i][j].numOfMines=0;
+//                g->board[i][j].isMine=FALSE;
+//                g->board[i][j].isVisible=FALSE;
+//                g->board[i][j].isFlagged=FALSE;
+//            }
+//        }
         populateMines(g, level);
     } else {
         printf("Error enter invalid rows or columns or level , pls enter again");
@@ -56,6 +68,9 @@ void init_visibileity(GameBoard *g) {
     for (int i = 0; i < g->rows; ++i) {
         for (int j = 0; j < g->cols; ++j) {
             g->board[i][j].isVisible = FALSE; // change the property to false
+            g->board[i][j].numOfMines = 0;
+            g->board[i][j].isMine = FALSE;
+            g->board[i][j].isFlagged = FALSE;
         }
     }
 }
@@ -76,10 +91,11 @@ void plus_one_mines(GameBoard *g, int row, int col) {
     if (0 <= (row + 1) && (row + 1) <= g->rows && 0 <= (col) &&
         (col) <= g->cols) { // one cell down [  *g->board[row + 1][col] ]
         g->board[row + 1][col].numOfMines++;
+
     }
     if (0 <= (row) && (row) <= g->rows && 0 <= (col + 1) &&
         (col + 1) <= g->cols) { //one column right [ *g->board[row][col + 1] ]
-        g->board[row][col + 1].numOfMines++;
+        g->board[row][col + 1].numOfMines += 1;
     }
     if (0 <= (row) && (row) <= g->rows && 0 <= (col - 1) &&
         (col - 1) <= g->cols) { //one column left [ *g->board[row][col - 1]]
@@ -134,10 +150,10 @@ void populateMines(GameBoard *g, int level) {
     for (int i = 0; i < g->totalMines; ++i) { // for that random the mine inside the board
         int row = rand() % (g->rows - 1); // rand row between 1-20
         int col = rand() % (g->cols - 1); // rand col between 1-20
-        g->board[row][col].isMine = TRUE; // change the property to false
-        //plus_one_mines(g, row, col);// update all the neighboring cells plus one mine of neighbor
-        markNumbers(g);// update all the neighboring cells plus one mine of neighbor
+        g->board[row][col].isMine = TRUE; // change the property to true
     }
+    markNumbers(g);// update all the neighboring cells plus one mine of neighbor
+
 }
 
 void markNumbers(GameBoard *g) {
@@ -218,11 +234,8 @@ void flagTile(GameBoard *g, int row, int col) {
 }
 
 void printBoard(GameBoard *g, int cursorCoords[2]) {
-    g->board[2][2].isFlagged = TRUE;
-    //printf("%d\n",mine);
     for (int i = 0; i < g->rows; ++i) {
         for (int j = 0; j < g->cols; ++j) {
-//            printf("%d ", g->board[i][j].isMine);
             if (i == cursorCoords[0] && j == cursorCoords[1]) {
                 colorPrint(FG_Red, BG_White, ATT_Def, " #");
             } else if (!g->board[i][j].isVisible && g->board[i][j].isFlagged) {

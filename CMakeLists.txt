@@ -3,4 +3,4 @@ project(Minesweeper C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(Minesweeper main.c Minesweeper.c colorPrint.c )
+add_executable(Minesweeper main.c Minesweeper.c colorPrint.c game.c getch.c)
