@@ -7,6 +7,7 @@
 #include "getch.h"
 #include "colorPrint.h"
 
+
 int main() {
     int row, col, level;
 
@@ -22,74 +23,52 @@ int main() {
     char c = getch();
     printBoard(&g, cur);
     while (c != 'q') {
-         //clearScreen();
-//  TODO CHECK WHY THE GAME END IF WE CLICK \N
         c = getch();
         switch (c) {
-            case 'a': //Left
+            case LEFT:
                 if (cur[1] - 1 >= 0) {
                     cur[1] -= 1;
-                    //clearScreen();
-                    //printBoard(&g, cur);
                 }
                 break;
 
-            case 'd': //Right
-                if (cur[1] + 1 <g.cols) {
+            case RIGHT:
+                if (cur[1] + 1 < g.cols) {
                     cur[1] += 1;
-//                    clearScreen();
-                    //printBoard(&g, cur);
                 }
                 break;
 
-            case 'w': //Up
+            case UP:
                 if (cur[0] - 1 >= 0) {
                     cur[0] -= 1;
-//                    clearScreen();
-                    //printBoard(&g, cur);
                 }
                 break;
 
-            case 's': //Down
-                if (cur[0] + 1<g.rows) {
+            case DOWN:
+                if (cur[0] + 1 < g.rows) {
                     cur[0] += 1;
-//                    clearScreen();
-                    //printBoard(&g, cur);
                 }
                 break;
 
-            case '\n':
+            case CLICK_TILE:
                 clickTile(&g, cur[0], cur[1]);
-//                clearScreen();
-                //printBoard(&g, cur);
+
                 break;
-            case ' ':
-                g.board[cur[0]][cur[1]].isFlagged=TRUE;
-                //printBoard(&g,cur);
+            case FLAG_TILE:
+                flagTile(&g, cur[0], cur[1]);
                 break;
-            case 'q':
+            case QUIT:
                 break;
         }
-        if(g.isMineClicked){
-            printf("loser!!!!");
+        if (g.isMineClicked) {
+            printf("oops..you click on mine");
             break;
         }
-        for(int i=0;i<g.rows;i++){
-            for(int j=0; j<g.cols;j++){
-                if(g.board[i][j].isVisible || g.board[i][j].isFlagged){
-                    if(i==g.rows-1 && j==g.cols){
-                        printf("You are the champ!! just like tzlil!!");
-                        c='q';
-                    }
-                }
-                else break;
-            }
+        if (g.hiddenTiles == g.totalMines) {
+            printf("You won!");
+            break;
         }
-       printBoard(&g,cur);
-
+        printBoard(&g, cur);
     }
 
 
 }
-
-

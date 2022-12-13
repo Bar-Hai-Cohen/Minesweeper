@@ -1,5 +1,6 @@
+#ifndef MINESWEEPER_H
+#define MINESWEEPER_H
 #define MAX_BOARD_DIM        20
-
 #define EASY_LEVEL_PERCENT    12
 #define MEDIUM_LEVEL_PERCENT    16
 #define HARD_LEVEL_PERCENT    21
@@ -54,5 +55,4 @@ void init_visibileity(GameBoard *);
 
 void plus_one_mines(GameBoard *, int, int);
 
-//TODO: to cheack if i need to include the funcaion that i create or to do them pre order
-
+#endif

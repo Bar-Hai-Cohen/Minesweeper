@@ -1,6 +1,3 @@
-
-
-
 //defines possible colors for the foreground color.
 typedef enum
 {
@@ -18,7 +15,8 @@ typedef enum
 //defines possible colors for the background color.
 //BG_Def prints with the default background color of the terminal.
 typedef enum
-{    BG_Def = 0,
+{
+    BG_Def = 0,
     BG_Black = 40,
     BG_Red,
     BG_Green,
@@ -26,7 +24,8 @@ typedef enum
     BG_Blue,
     BG_Magenta,
     BG_Cyan,
-    BG_White}bgColor;
+    BG_White
+}bgColor;
 
 //defines possible additional attributes for the color printing.
 //normally, you would use ATT_Def.
@@ -38,7 +37,8 @@ typedef enum
     ATT_Reverse = 7,
     ATT_Hidden = 8,
     ATT_Scratch = 9
-}attribute;
+
+}attribute;
 
 //clears the screen completely.
 void clearScreen();

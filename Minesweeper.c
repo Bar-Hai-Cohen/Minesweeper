@@ -9,15 +9,13 @@
 #include <time.h>
 #include "colorPrint.h"
 
-//TODO: to check if we need to put if and end if
 
-//TODO: i need to set all the mine no zero start or not ? // why to tzlil is make numbers and to me zero ?
+//Pre call my function
+void init_visibileity(GameBoard *g);
 
-//TODO : todo pre call for all the function that i write here
+void plus_one_mines(GameBoard *g, int, int);
 
-//TODO : to check why he fall somtimes
-
-//TODO: check total mine
+void freep(GameBoard *g);
 
 
 bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upon success
@@ -27,34 +25,42 @@ bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upo
      * return: return True if initialize succeed Else return False.
      */
 
-    if (rows > 0 && rows <= MAX_BOARD_DIM && cols > 0 && cols <= MAX_BOARD_DIM && level >= EASY && level <= HARD) {
+    //check if the arguments are in the range, if not default value
 
-        //Initialize property
-        g->rows = rows;
-        g->cols = cols;
-
-        //Initialize the board game :Create the 2D array
-        g->board = (Tile **) malloc(sizeof(Tile *) * (rows));
-        for (int i = 0; i < rows; ++i) {
-            g->board[i] = (Tile *) malloc(sizeof(Tile) * cols);
-        }
-//        for(int i=0; i<g->rows;i++){
-//            for(int j=0; j<g->cols;j++){
-//                g->board[i][j].numOfMines=0;
-//                g->board[i][j].isMine=FALSE;
-//                g->board[i][j].isVisible=FALSE;
-//                g->board[i][j].isFlagged=FALSE;
-//            }
-//        }
-        populateMines(g, level);
+    if (rows < 1) {
+        rows = 4;
+    } else if (rows > MAX_BOARD_DIM) {
+        rows = 20;
     } else {
-        printf("Error enter invalid rows or columns or level , pls enter again");
-
-        //TODO: check what to do if the input is invalid
+        rows = rows;
     }
-    //TODO: free all the malloc
 
-    return TRUE; // TODO: change
+    if (cols < 1) {
+        cols = 4;
+    } else if (cols > MAX_BOARD_DIM) {
+        cols = 20;
+    } else {
+        cols = cols;
+    }
+
+    if (level >= EASY && level <= HARD) {
+        level = level;
+    } else {
+        level = 1;
+    }
+
+    //Initialize property
+    g->rows = rows;
+    g->cols = cols;
+
+    //Initialize the board game :Create the 2D array
+    g->board = (Tile **) malloc(sizeof(Tile *) * (rows));
+    for (int i = 0; i < rows; ++i) {
+        g->board[i] = (Tile *) malloc(sizeof(Tile) * cols);
+    }
+    populateMines(g, level);
+
+    return TRUE;
 
 }
 
@@ -73,6 +79,8 @@ void init_visibileity(GameBoard *g) {
             g->board[i][j].isFlagged = FALSE;
         }
     }
+    g->hiddenTiles = (g->rows) * (g->cols);
+    g->isMineClicked = FALSE;
 }
 
 
@@ -83,27 +91,27 @@ void plus_one_mines(GameBoard *g, int row, int col) {
      * return: null
    */
 
-    if (0 <= (row - 1) && (row - 1) <= g->rows && 0 <= (col) &&
-        (col) <= g->cols) { //one cell up  [ *g->board[row - 1][col] ]
+    if (0 <= (row - 1) && (row - 1) < g->rows && 0 <= (col) &&
+        (col) < g->cols) { //one cell up  [ *g->board[row - 1][col] ]
         g->board[row - 1][col].numOfMines++;
     }
 
-    if (0 <= (row + 1) && (row + 1) <= g->rows && 0 <= (col) &&
-        (col) <= g->cols) { // one cell down [  *g->board[row + 1][col] ]
+    if (0 <= (row + 1) && (row + 1) < g->rows && 0 <= (col) &&
+        (col) < g->cols) { // one cell down [  *g->board[row + 1][col] ]
         g->board[row + 1][col].numOfMines++;
 
     }
-    if (0 <= (row) && (row) <= g->rows && 0 <= (col + 1) &&
-        (col + 1) <= g->cols) { //one column right [ *g->board[row][col + 1] ]
+    if (0 <= (row) && (row) < g->rows && 0 <= (col + 1) &&
+        (col + 1) < g->cols) { //one column right [ *g->board[row][col + 1] ]
         g->board[row][col + 1].numOfMines += 1;
     }
-    if (0 <= (row) && (row) <= g->rows && 0 <= (col - 1) &&
-        (col - 1) <= g->cols) { //one column left [ *g->board[row][col - 1]]
+    if (0 <= (row) && (row) < g->rows && 0 <= (col - 1) &&
+        (col - 1) < g->cols) { //one column left [ *g->board[row][col - 1]]
         g->board[row][col - 1].numOfMines++;
     }
 
-    if (0 <= (row - 1) && (row - 1) <= g->rows &&
-        0 <= (col - 1) && (col - 1) <= g->cols) { //Diagonal top right [ *g->board[row - 1][col - 1]]
+    if (0 <= (row - 1) && (row - 1) < g->rows &&
+        0 <= (col - 1) && (col - 1) < g->cols) { //Diagonal top right [ *g->board[row - 1][col - 1]]
         g->board[row - 1][col - 1].numOfMines++;
     }
 
@@ -112,12 +120,12 @@ void plus_one_mines(GameBoard *g, int row, int col) {
         g->board[row + 1][col - 1].numOfMines++;
     }
 
-    if (0 <= (row - 1) && (row - 1) <= g->rows &&
-        0 <= (col + 1) && (col + 1) <= g->cols) { //Diagonal top left [ *g->board[row - 1][col + 1]]
+    if (0 <= (row - 1) && (row - 1) < g->rows &&
+        0 <= (col + 1) && (col + 1) < g->cols) { //Diagonal top left [ *g->board[row - 1][col + 1]]
         g->board[row - 1][col + 1].numOfMines++;
     }
-    if (0 <= (row + 1) && (row + 1) <= g->rows &&
-        0 <= (col + 1) && (col + 1) <= g->cols) { //Diagonal down left [ *g->board[row + 1][col + 1]]
+    if (0 <= (row + 1) && (row + 1) < g->rows &&
+        0 <= (col + 1) && (col + 1) < g->cols) { //Diagonal down left [ *g->board[row + 1][col + 1]]
         g->board[row + 1][col + 1].numOfMines++;
     }
 
@@ -177,7 +185,7 @@ void clickTile(GameBoard *g, int row, int col) {
      * param: The parameter pointer to the board, the row and column
      * return: null
    */
-    if (row >= 0 && row <= g->rows && col >= 0 && col <= g->cols) { // if the row and the column is inside the board
+    if (row >= 0 && row < g->rows && col >= 0 && col < g->cols) { // if the row and the column is inside the board
         if (g->board[row][col].isVisible) // if the tile is visible return
             return;
         if (!g->board[row][col].isVisible &&
@@ -192,11 +200,14 @@ void clickTile(GameBoard *g, int row, int col) {
             if (g->board[row][col].numOfMines >
                 0) { //if there is number of neighbor mine just open and show the number of mine around him
                 g->board[row][col].isVisible = TRUE;
+                g->hiddenTiles -= 1;
                 return;
             }
 
             if (g->board[row][col].numOfMines ==
                 0) { //there is no neighbor mine around him so call this function to the neighbor of him
+                g->board[row][col].isVisible = TRUE;
+                g->hiddenTiles -= 1;
                 clickTile(g, row - 1, col - 1);// up left
                 clickTile(g, row - 1, col); // up
                 clickTile(g, row - 1, col + 1);//up right
@@ -218,14 +229,14 @@ void flagTile(GameBoard *g, int row, int col) {
    * param: The parameter pointer to the board, row and column
    * return: null
  */
-    if (row >= 0 && row <= g->rows && col >= 0 && col <= g->cols) { // if the row and the column is inside the board
+    if (row >= 0 && row < g->rows && col >= 0 && col < g->cols) { // if the row and the column is inside the board
         if (g->board[row][col].isVisible) // if he is visible return
             return;
-        if (g->board[row][col].isVisible == FALSE &&
-            g->board[row][col].isFlagged == FALSE) //if the tile is invisible and not flag, she will flag him
+        else if (g->board[row][col].isVisible == FALSE &&
+                 g->board[row][col].isFlagged == FALSE) //if the tile is invisible and not flag, she will flag him
             g->board[row][col].isFlagged = TRUE;
-        if (g->board[row][col].isVisible == FALSE &&
-            g->board[row][col].isFlagged == TRUE) //if the tile is invisible and flag, she will remove the flag
+        else if (g->board[row][col].isVisible == FALSE &&
+                 g->board[row][col].isFlagged == TRUE) //if the tile is invisible and flag, she will remove the flag
             g->board[row][col].isFlagged = FALSE;
 
     } else { // if the row and col not in the area remove.
@@ -234,22 +245,40 @@ void flagTile(GameBoard *g, int row, int col) {
 }
 
 void printBoard(GameBoard *g, int cursorCoords[2]) {
+    /*
+     * A function that print the board
+    * param: The parameter pointer to the board, row and column
+    * return: null
+    */
+    clearScreen();//clear screen
     for (int i = 0; i < g->rows; ++i) {
         for (int j = 0; j < g->cols; ++j) {
-            if (i == cursorCoords[0] && j == cursorCoords[1]) {
-                colorPrint(FG_Red, BG_White, ATT_Def, " #");
-            } else if (!g->board[i][j].isVisible && g->board[i][j].isFlagged) {
-                colorPrint(FG_Red, BG_White, ATT_Def, " F");
-            } else if (g->board[i][j].isVisible && !g->board[i][j].isFlagged) {
+            if (i == cursorCoords[0] && j == cursorCoords[1]) { // if this is the cell you on it
+                colorPrint(FG_Red, BG_White, ATT_Def, " #"); // print format
+            } else if (!g->board[i][j].isVisible && g->board[i][j].isFlagged) { // if not visible and flag
+                colorPrint(FG_Red, BG_White, ATT_Def, " F"); // print format
+            } else if (g->board[i][j].isVisible) { // else if visible print number of mine
                 int mine = g->board[i][j].numOfMines;
                 colorPrint(FG_Red, BG_White, ATT_Def, " %d", mine);
-            } else if (!g->board[i][j].isVisible) {
+            } else if (!g->board[i][j].isVisible) { // if not visible
                 colorPrint(FG_Blue, BG_Blue, ATT_Def, "  ");
             }
         }
         printf("\n");
     }
 }
+
+void freep(GameBoard *g) {
+      /*
+        * A function that free the board
+       * param: The parameter pointer to the board
+       * return: null
+       */
+    for (int i = 0; i < g->rows; ++i) {
+        free(g->board[i]); // free all the array
+    }
+}
+
 
 
 
