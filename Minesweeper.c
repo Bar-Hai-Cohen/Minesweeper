@@ -55,8 +55,16 @@ bool initBoard(GameBoard *g, int rows, int cols, int level) { //returns true upo
 
     //Initialize the board game :Create the 2D array
     g->board = (Tile **) malloc(sizeof(Tile *) * (rows));
+    if(g->board==NULL){
+        printf("EROR");
+        return FALSE;
+    }
     for (int i = 0; i < rows; ++i) {
         g->board[i] = (Tile *) malloc(sizeof(Tile) * cols);
+        if(g->board[i]==NULL){
+            printf("EROR");
+            return FALSE;
+        }
     }
     populateMines(g, level);
 
@@ -269,11 +277,11 @@ void printBoard(GameBoard *g, int cursorCoords[2]) {
 }
 
 void freep(GameBoard *g) {
-      /*
-        * A function that free the board
-       * param: The parameter pointer to the board
-       * return: null
-       */
+    /*
+      * A function that free the board
+     * param: The parameter pointer to the board
+     * return: null
+     */
     for (int i = 0; i < g->rows; ++i) {
         free(g->board[i]); // free all the array
     }
